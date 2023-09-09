@@ -256,6 +256,9 @@ poetry.toml
 # ruff
 .ruff_cache/
 
+# streamlit files
+.streamlit/
+
 # LSP config files
 pyrightconfig.json
 
