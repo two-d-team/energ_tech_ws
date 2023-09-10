@@ -1,12 +1,38 @@
+import pandas as pd
+import pymongo
 import streamlit as st
 
 from utils_dir import styles
 from utils_dir.texts import text
 
+
 st.set_page_config(
     page_title="Green Energy Production Forecasting",
     page_icon="🔋",
 )
+
+
+# Initialize database connection.
+# Uses st.cache_resource to only run once.
+@st.cache_resource
+def init_database_connection():
+    return pymongo.MongoClient("mongodb://root:pass@0.0.0.0:27017/")
+
+
+# @st.cache_resource
+# def add_turbine_data_to_db(turbine_data):
+#
+#     mongodb_client.energydb.turbines.insert_many(turbine_data)
+#
+
+# mongodb_client = init_database_connection()
+# energy_tech_df = pd.read_csv("./data/wind_turbines.csv")
+# energy_tech_df = energy_tech_df.drop_duplicates()
+# energy_tech_df = energy_tech_df[["Turbine Model", "Tower Height", "Rotor Diameter", "Production Year", "START m/s",
+#                                  "STOP  m/s"]]
+# energy_tech_df = energy_tech_df.drop_duplicates()
+#
+# add_turbine_data_to_db(energy_tech_df.to_dict(orient="records"))
 
 st.markdown(styles.custom_headers, unsafe_allow_html=True)
 
