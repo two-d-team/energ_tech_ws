@@ -2,11 +2,7 @@ import streamlit as st
 import sys
 import os
 
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
-sys.path.append(parent_dir)
-sys.path.append(parent_dir+"/utils")
-
+from prediction import forecast
 from utils_dir.styles import custom_headers
 
 st.markdown(custom_headers, unsafe_allow_html=True)
@@ -19,9 +15,6 @@ st.markdown("<h1>Forecasting</h1>", unsafe_allow_html=True)
 #     page_icon="📝"
 # )
 #
-def forecast(unit):
-    print(unit)
-    pass
 
 
 selected_option=st.radio('Pick one:', ['Wind Turbine','Solar Panel'])
@@ -57,7 +50,6 @@ if selected_option=="Wind Turbine":
     st.subheader('Select number of days for forecast')
 
     number = st.number_input('Number of days',max_value=7,step=1)
-
 
 
 st.button("Forecast",on_click=forecast(unit_list))

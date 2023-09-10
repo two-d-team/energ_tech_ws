@@ -8,17 +8,6 @@ from prediction import forecast
 from utils_dir.styles import custom_headers
 
 
-# Initialize database connection.
-# Uses st.cache_resource to only run once.
-@st.cache_resource
-def init_database_connection():
-    return pymongo.MongoClient("mongodb://root:pass@0.0.0.0:27017/")
-
-
-mongodb_client = init_database_connection()
-mongodb_client.unitsdb.test_collection.insert_one({"name": "Abc", "type": "Wind"})
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
 st.markdown(custom_headers, unsafe_allow_html=True)
 st.markdown("<h1>Test Model</h1>", unsafe_allow_html=True)
 
@@ -67,21 +56,7 @@ if selected_option == "Wind Turbine":
 
     st.subheader("Select Start/Stop Dates")
 
-    start_date = st.date_input("Start Date", datetime.date(2023, 9, 9))
-    stop_date = st.date_input("Stop Date", datetime.date(2023, 9, 9))
+    start_date = st.date_input("Start Date", datetime.datetime(2023, 9, 9))
+    stop_date = st.date_input("Stop Date", datetime.datetime(2023, 9, 9))
 
 st.button("Forecast", on_click=forecast(unit_list, start_date, stop_date))
-
-# # Uses st.cache_data to only rerun when the query changes or after 10 minutes.
-# @st.cache_data(ttl=600)
-# def get_data():
-#     test_database = mongodb_client.unitsdb
-#
-#     return list(test_database.test_collection.find())
-#
-#
-# units = get_data()
-#
-#
-# for unit in units:
-#     st.write("{} has a :{}:".format(unit["name"], unit["type"]))
