@@ -7,3 +7,11 @@ docker run -d --name test_mongodb -p 27017:27017
            -e MONGO_INITDB_ROOT_PASSWORD=pass 
            mongo
 ```
+
+
+# Setting up the project
+
+```
+pip install requirements.txt
+streamlit run Home.py
+```
