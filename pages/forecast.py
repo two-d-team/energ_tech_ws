@@ -1,8 +1,16 @@
 import streamlit as st
 import sys
 import os
+import pandas as pd
+from utils_dir.weather_api import get_forecast_weather_sun, get_forecast_weather_wind
+from prediction import forecast_panel,forecast_turbine
 
-from prediction import forecast
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+sys.path.append(parent_dir)
+sys.path.append(parent_dir+"/utils")
+
 from utils_dir.styles import custom_headers
 
 st.markdown(custom_headers, unsafe_allow_html=True)
@@ -17,42 +25,78 @@ st.markdown("<h1>Forecasting</h1>", unsafe_allow_html=True)
 #
 
 
+
 selected_option=st.radio('Pick one:', ['Wind Turbine','Solar Panel'])
 unit_list=[]
+new_unit_list=[]
+weather_df=None
+
+
+def checkbox_container(data):
+    cols = st.columns(5)
+    if cols[0].button('Select All'):
+        for i in data:
+            st.session_state['dynamic_checkbox_' + i] = True
+        st.experimental_rerun()
+    if cols[1].button('UnSelect All'):
+        for i in data:
+            st.session_state['dynamic_checkbox_' + i] = False
+        st.experimental_rerun()
+    for i in data:
+        st.checkbox(i, key='dynamic_checkbox_' + i)
+
+def get_selected_checkboxes():
+    return [i.replace('dynamic_checkbox_', '') for i in st.session_state.keys() if
+            i.startswith('dynamic_checkbox_') and st.session_state[i]]
+
 if selected_option=="Wind Turbine":
 
 
     st.text("")
     st.subheader('Select a Unit')
 
-    unit_1=st.checkbox('Unit1')
-    if unit_1:
-        unit_list.append("Unit1")
-    unit_2=st.checkbox('Unit2')
-    if unit_2:
-        unit_list.append("Unit2")
-    unit_3=st.checkbox('Unit3')
-    if unit_3:
-        unit_list.append("Unit3")
-    unit_4=st.checkbox('Unit4')
-    if unit_4:
-        unit_list.append("Unit4")
-    unit_5=st.checkbox('Unit5')
-    if unit_5:
-        unit_list.append("Unit5")
-    unit_6=st.checkbox('Unit6')
-    if unit_6:
-        unit_list.append("Unit6")
-    unit_7=st.checkbox('Unit7')
-    if unit_7:
-        unit_list.append("Unit7")
+    import streamlit as st
+
+    if 'dummy_data' not in st.session_state.keys():
+        dummy_data = ['Unit1', 'Unit2', 'Unit3', 'Unit4', 'Unit5','Unit6','Unit7']
+        st.session_state['dummy_data'] = dummy_data
+    else:
+        dummy_data = st.session_state['dummy_data']
+
+    checkbox_container(dummy_data)
+    st.write('You selected:')
+    unit_list=get_selected_checkboxes()
+
 
     st.subheader('Select number of days for forecast')
 
-    number = st.number_input('Number of days',max_value=7,step=1)
+    number_days = st.number_input('Number of days',max_value=7,step=1)
+
+    coordinates = "47.034746,28.421021"
 
 
-st.button("Forecast",on_click=forecast(unit_list))
+    #forecast_bt=st.button("Forecast",on_click=get_forecast_weather(number_days,coordinates))
+    forecast_bt = st.button("Forecast", on_click=forecast_turbine(get_forecast_weather_wind(number_days,unit_list)[0],get_forecast_weather_wind(number_days,unit_list)[1]))
+
+elif selected_option=="Solar Panel":
+
+    if 'sun_data' not in st.session_state.keys():
+        sun_data = ['Unit1']
+        st.session_state['sun_data'] = sun_data
+    else:
+        sun_data = st.session_state['sun_data']
+
+    checkbox_container(sun_data)
+    st.write('You selected:')
+    unit_list = get_selected_checkboxes()
+
+    st.subheader('Select number of days for forecast')
+
+    number_days = st.number_input('Number of days', max_value=7, step=1)
+
+    forecast_bt = st.button("Forecast",on_click=forecast_panel(get_forecast_weather_sun(number_days,unit_list)[0],get_forecast_weather_sun(number_days,unit_list)[1]))
+
+
 
 
 

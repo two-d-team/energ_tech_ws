@@ -1,46 +1,99 @@
+import pandas as pd
+import pickle
+import numpy as np
 import os
 import sys
 import datetime
-import numpy as np
-import pandas as pd
-import streamlit as st
-import pymongo
 import plotly.express as px
 
-from datetime import datetime
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+pages_path = os.path.join(current_dir, 'pages')
+sys.path.append(pages_path)
+
+# from page1 import age,gender,score,credit_limit,income,bnr40,offer_crab,offer_delfin,offer_pinguin,produs,other_credits,comission
+
+# model_path = 'model/'
+    # with open(model_path + 'credit_risk_model.pkl', 'rb') as file:
+    #     model = pickle.load(file)
 
 
-# Initialize database connection.
-# Uses st.cache_resource to only run once.
-@st.cache_resource
-def init_database_connection():
-    return pymongo.MongoClient("mongodb://root:pass@0.0.0.0:27017/")
-
-
-mongodb_client = init_database_connection()
-current_datetime = datetime.now()
+current_datetime = datetime.datetime.now()
 formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
 excel_file_path = f"results_from_{formatted_datetime}.xlsx"
 
-mongodb_client.energydb.predictions.insert_many(predictions_sample)
+
+def forecast_turbine(df_unit,df_weather):
+    result_list=[]
+    pass
+    #for unit in df_unit.unique():
+        #select data from database for each unit
+        #df=where in start date - stop date
+
+        # for row in df.itterrows()
+        #     row['forecasted']=model.predict(row)
+        #     #result_list.append(result)
+        # #result to series
+       # #df["Forecasted"]=result_series
+        #df.to_excel(excel_file_path, sheet_name=unit, index=False)
 
 
-def forecast(unit_list, start_date, stop_date):
-    result_list = []
-    start_date_time = datetime(start_date.year, start_date.month, start_date.day)
-    stop_date_time = datetime(stop_date.year, stop_date.month, stop_date.day)
+        # fig = px.line(df, x="datetime", y="", color='country')
+        # fig.show()
 
-    for unit in unit_list:
-        cursor = mongodb_client.energydb.predictions.find({
-            "unit_id": unit
-            #"start_date": {"$lte": stop_date_time, "$gte": start_date_time}
-        })
+def forecast_panel(df_unit,df_weather):
+    result_list=[]
+    pass
+    #for unit in df_unit.unique():
+        #select data from database for each unit
+        #df=where in start date - stop date
 
-        for element in cursor:
-            result_list.append({
-                "unit_id": element["unit_id"],
-                "prediction": element["prediction"]
-            })
+        # for row in df.itterrows()
+        #     row['forecasted']=model.predict(row)
+        #     #result_list.append(result)
+        # #result to series
+       # #df["Forecasted"]=result_series
+        #df.to_excel(excel_file_path, sheet_name=unit, index=False)
 
-    for element in result_list:
-        print(element["prediction"])
+
+        # fig = px.line(df, x="datetime", y="", color='country')
+        # fig.show()
+
+
+def predict_sun(unit_list, start_date, stop_date):
+    pass
+
+
+def predict_wind(unit_list, start_date, stop_date):
+    pass
+
+
+
+def forecast(df_unit,df_weather):
+    result_list=[]
+    pass
+    #for unit in unit_list:
+        # select data from database for each unit
+        #df=where in start date - stop date
+
+        # for row in df.itterrows()
+        #     row['forecasted']=model.predict(row)
+        #     #result_list.append(result)
+        # #result to series
+       # #df["Forecasted"]=result_series
+        #df.to_excel(excel_file_path, sheet_name=unit, index=False)
+
+
+        # fig = px.line(df, x="datetime", y="", color='country')
+        # fig.show()
+
+
+
+
+
+
+
+    #result to series
+    #return result[0]
+# print(predict(age,gender,score,credit_limit,income,bnr40,offer_crab,offer_delfin,offer_pinguin,produs,other_credits,comission))

@@ -1,62 +1,99 @@
-import datetime
-import os
-import pymongo
 import streamlit as st
 import sys
+import os
+import datetime
+from prediction import predict_sun,predict_wind
 
-from prediction import forecast
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+sys.path.append(parent_dir)
+sys.path.append(parent_dir+"/utils")
+
 from utils_dir.styles import custom_headers
 
-
 st.markdown(custom_headers, unsafe_allow_html=True)
+
+
 st.markdown("<h1>Test Model</h1>", unsafe_allow_html=True)
+# from prediction import predict
+# st.set_page_config(
+#     page_title="Form",
+#     page_icon="📝"
+# )
+#
 
-selected_option = st.radio("Pick one:", ["Wind Turbine", "Solar Panel"])
-unit_list = []
-start_date = None
-stop_date = None
 
-if selected_option == "Wind Turbine":
+selected_option=st.radio('Pick one:', ['Wind Turbine','Solar Panel'])
+unit_list=[]
+start_date=None
+stop_date=None
+
+def checkbox_container(data):
+    cols = st.columns(5)
+    if cols[0].button('Select All'):
+        for i in data:
+            st.session_state['dynamic_checkbox_' + i] = True
+        st.experimental_rerun()
+    if cols[1].button('UnSelect All'):
+        for i in data:
+            st.session_state['dynamic_checkbox_' + i] = False
+        st.experimental_rerun()
+    for i in data:
+        st.checkbox(i, key='dynamic_checkbox_' + i)
+
+def get_selected_checkboxes():
+    return [i.replace('dynamic_checkbox_', '') for i in st.session_state.keys() if
+            i.startswith('dynamic_checkbox_') and st.session_state[i]]
+
+
+
+if selected_option=="Wind Turbine":
+
     st.text("")
-    st.subheader("Select a Unit")
-    unit_1 = st.checkbox("Unit1")
+    st.subheader('Select a Unit')
 
-    if unit_1:
-        unit_list.append("Unit1")
+    import streamlit as st
 
-    unit_2 = st.checkbox("Unit2")
+    if 'dummy_data' not in st.session_state.keys():
+        dummy_data = ['Unit1', 'Unit2', 'Unit3', 'Unit4', 'Unit5', 'Unit6', 'Unit7']
+        st.session_state['dummy_data'] = dummy_data
+    else:
+        dummy_data = st.session_state['dummy_data']
 
-    if unit_2:
-        unit_list.append("Unit2")
+    checkbox_container(dummy_data)
+    st.write('You selected:')
+    unit_list = get_selected_checkboxes()
 
-    unit_3 = st.checkbox("Unit3")
+    st.subheader('Select Start/Stop Dates')
 
-    if unit_3:
-        unit_list.append("Unit3")
+    start_date = st.date_input("Start Date", datetime.date(2023, 9, 9))
+    stop_date = st.date_input("Stop Date", datetime.date(2023, 9, 9))
 
-    unit_4 = st.checkbox("Unit4")
+    st.button("Forecast",on_click=predict_wind(unit_list,start_date,stop_date))
 
-    if unit_4:
-        unit_list.append("Unit4")
 
-    unit_5 = st.checkbox("Unit5")
 
-    if unit_5:
-        unit_list.append("Unit5")
+elif selected_option=="Solar Panel":
 
-    unit_6 = st.checkbox("Unit6")
+    if 'sun_data' not in st.session_state.keys():
+        sun_data = ['Unit1']
+        st.session_state['sun_data'] = sun_data
+    else:
+        sun_data = st.session_state['sun_data']
 
-    if unit_6:
-        unit_list.append("Unit6")
+    checkbox_container(sun_data)
+    st.write('You selected:')
+    #unit_list = get_selected_checkboxes()
+    st.subheader('Select Start/Stop Dates')
 
-    unit_7 = st.checkbox("Unit7")
+    start_date = st.date_input("Start Date", datetime.date(2023, 9, 9))
+    stop_date = st.date_input("Stop Date", datetime.date(2023, 9, 9))
 
-    if unit_7:
-        unit_list.append("Unit7")
+    st.button("Forecast", on_click=predict_sun(unit_list, start_date, stop_date))
 
-    st.subheader("Select Start/Stop Dates")
 
-    start_date = st.date_input("Start Date", datetime.datetime(2023, 9, 9))
-    stop_date = st.date_input("Stop Date", datetime.datetime(2023, 9, 9))
 
-st.button("Forecast", on_click=forecast(unit_list, start_date, stop_date))
+
+
+
+
