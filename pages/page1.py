@@ -5,7 +5,7 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 sys.path.append(parent_dir)
 
-from styles import custom_headers
+from utils_dir.styles import custom_headers
 
 
 st.markdown(custom_headers, unsafe_allow_html=True)

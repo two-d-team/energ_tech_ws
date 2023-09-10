@@ -1,13 +1,11 @@
 import datetime
-import pandas as pd
 import pandas
 import seaborn
 import streamlit
-import streamlit as st
+
+import altair as alt
 
 from plotly import express
-import matplotlib.pyplot as plt
-import altair as alt
 
 seaborn.set()
 
@@ -44,8 +42,8 @@ def show_plots(data_frame, last_df, features):
     df = data_frame
 
     # --- #
-    st.write("Top packages by monthly pay")
-    col1, col2 = st.columns(2)
+    streamlit.write("Top packages by monthly pay")
+    col1, col2 = streamlit.columns(2)
     tvpack_months = df.groupby('IPTV_PACK').agg({
         'PERIOADA': ['max', 'min']
     })
@@ -74,7 +72,7 @@ def show_plots(data_frame, last_df, features):
 
     # top_iptv_churn = last_df.groupby('IPTV_PACK').size().sort_values(ascending=False).index[:10]
     # df_temp = df_temp[top_iptv_churn].fillna(0)
-    # st.line_chart(df_temp)
+    # streamlit.line_chart(df_temp)
 
     # inet
 
@@ -83,13 +81,13 @@ def show_plots(data_frame, last_df, features):
 
     top_inet_churn = last_df.groupby('INET_PACK').size().sort_values(ascending=False).index[:10]
     df_temp2 = df_temp2[top_inet_churn].fillna(0)
-    st.write('### INET Packs customers through time')
+    streamlit.write('### INET Packs customers through time')
 
-    st.line_chart(df_temp2)
-    col1, col2 = st.columns(2)
+    streamlit.line_chart(df_temp2)
+    col1, col2 = streamlit.columns(2)
 
     customers_cnt = df.groupby('PERIOADA').size().rename('customers')
-    customers_cnt = pd.DataFrame({
+    customers_cnt = pandas.DataFrame({
         'month': customers_cnt.index,
         'value': customers_cnt
     })
@@ -105,7 +103,7 @@ def show_plots(data_frame, last_df, features):
     users_per_month = df.groupby('PERIOADA').ACCOUNTID.nunique()
     churns_ratio_per_month = churn_ratio_cnt.div(users_per_month) * 100
 
-    churn_ratio_cnt = pd.DataFrame({
+    churn_ratio_cnt = pandas.DataFrame({
         'month': churns_ratio_per_month.index,
         'value': churns_ratio_per_month
     })
@@ -118,24 +116,24 @@ def show_plots(data_frame, last_df, features):
     col2.altair_chart(cr_line_chart)
 
     ### 
-    last_df.loc[:, 'IS_CHURN_INET'] = last_df.apply(lambda row: (pd.isna(row['INET_PACK']) & row['IS_CHURN']), axis=1)
-    last_df.loc[:, 'IS_CHURN_IPTV'] = last_df.apply(lambda row: (pd.isna(row['IPTV_PACK']) & row['IS_CHURN']), axis=1)
+    last_df.loc[:, 'IS_CHURN_INET'] = last_df.apply(lambda row: (pandas.isna(row['INET_PACK']) & row['IS_CHURN']), axis=1)
+    last_df.loc[:, 'IS_CHURN_IPTV'] = last_df.apply(lambda row: (pandas.isna(row['IPTV_PACK']) & row['IS_CHURN']), axis=1)
 
     s1 = last_df.groupby(['PERIOADA']).IS_CHURN_IPTV.sum()
     s2 = last_df.groupby(['PERIOADA']).IS_CHURN_INET.sum()
 
-    pack_ratio_df = pd.DataFrame({
+    pack_ratio_df = pandas.DataFrame({
         'iptv': s1,
         'inet': s2
     }).rename_axis('Perioada')
 
-    st.write('### Churned customers for each packet by month')
-    st.line_chart(pack_ratio_df)
-    # st.altair_chart(pr_line_chart)
+    streamlit.write('### Churned customers for each packet by month')
+    streamlit.line_chart(pack_ratio_df)
+    # streamlit.altair_chart(pr_line_chart)
 
     # suma achitarii
     suma_ac_per_month = df.groupby('PERIOADA').SUMA_ACHITARII.sum()
-    suma_ac_per_month = pd.DataFrame({
+    suma_ac_per_month = pandas.DataFrame({
         'month': suma_ac_per_month.index,
         'value': suma_ac_per_month
     })
@@ -157,9 +155,9 @@ def show_plots(data_frame, last_df, features):
     })
 
 
-    st.write('### Churn distribution by feature')
+    streamlit.write('### Churn distribution by feature')
     
-    col1, col2 = st.columns(2)
+    col1, col2 = streamlit.columns(2)
     col1.write('Contract length')
     col1.bar_chart(contract_churn)
 
@@ -175,7 +173,7 @@ def show_plots(data_frame, last_df, features):
     col2.bar_chart(qnt_luni_dator)
 
     # concurenti
-    col1, col2 = st.columns(2)
+    col1, col2 = streamlit.columns(2)
 
     concurenti_churn = df.groupby(['ACCOUNTID']).last().groupby(['CONCURENTI', 'IS_CHURN']).size().unstack()
     concurenti_churn = concurenti_churn.div(concurenti_churn.sum(axis=1), axis=0)
@@ -218,11 +216,10 @@ def show_plots(data_frame, last_df, features):
 
         pack_dist_time_list.append([name, iptv_count, inet_count, both_count])
 
-    pack_dist_time_df = pd.DataFrame(pack_dist_time_list, columns=['perioada', 'iptv', 'inet', 'both']).set_index('perioada')
+    pack_dist_time_df = pandas.DataFrame(pack_dist_time_list, columns=['perioada', 'iptv', 'inet', 'both']).set_index('perioada')
 
     pack_dist_time_df = pack_dist_time_df.div(pack_dist_time_df.sum(axis=1), axis=0)
-    pack_dist_time_df * 100
-    pack_dist_time_df = pd.DataFrame(pack_dist_time_list, columns=['perioada', 'iptv', 'inet', 'both']).set_index('perioada')
+    pack_dist_time_df = pandas.DataFrame(pack_dist_time_list, columns=['perioada', 'iptv', 'inet', 'both']).set_index('perioada')
     pack_dist_time_df = pack_dist_time_df.div(pack_dist_time_df.sum(axis=1), axis=0) * 100
 
 
@@ -234,7 +231,5 @@ def show_plots(data_frame, last_df, features):
 
     s = s['LUNI_DATOR'].div(s['ACCOUNTID']) * 100
 
-    st.write('### % of customers with debts')
-    st.line_chart(s)
-
-    
+    streamlit.write('### % of customers with debts')
+    streamlit.line_chart(s)
