@@ -57,7 +57,7 @@ predictions_sample = [{
 # mongodb_client.energydb.predictions.insert_many(predictions_sample)
 
 
-def forecast(unit_list, start_date, stop_date):
+def forecast_turbine(unit_list, start_date, stop_date):
     result_list = []
     start_date_time = datetime(start_date.year, start_date.month, start_date.day)
     stop_date_time = datetime(stop_date.year, stop_date.month, stop_date.day)
@@ -68,11 +68,11 @@ def forecast(unit_list, start_date, stop_date):
         })
 
         for element in cursor:
-            print(element["start_date"])
-            print(start_date_time)
-            print(element["stop_date"])
-            print(stop_date_time)
-            print(type(element["start_date"]))
+            # print(element["start_date"])
+            # print(start_date_time)
+            # print(element["stop_date"])
+            # print(stop_date_time)
+            # print(type(element["start_date"]))
             if (element["start_date"] > start_date_time and stop_date_time < element["stop_date"]):
                 result_list.append({
                     "unit_id": element["unit_id"],
@@ -81,3 +81,8 @@ def forecast(unit_list, start_date, stop_date):
 
     for element in result_list:
         print(element["prediction"])
+
+
+def forecast_panel(df_unit, df_weather, stop_date):
+    result_list=[]
+    pass

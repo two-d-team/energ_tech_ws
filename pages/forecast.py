@@ -6,11 +6,7 @@ from utils_dir.weather_api import get_forecast_weather_sun, get_forecast_weather
 from prediction import forecast_panel,forecast_turbine
 
 
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
-sys.path.append(parent_dir)
-sys.path.append(parent_dir+"/utils")
-
+from prediction import forecast_turbine
 from utils_dir.styles import custom_headers
 
 st.markdown(custom_headers, unsafe_allow_html=True)
