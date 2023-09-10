@@ -1,18 +1,22 @@
 import streamlit as st
 import sys
 import os
-import pandas as pd
-from utils_dir.weather_api import get_forecast_weather_sun, get_forecast_weather_wind
-from prediction import forecast_panel,forecast_turbine
+import datetime
+from prediction import predict_sun, predict_turbine
 
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-from prediction import forecast_turbine
 from utils_dir.styles import custom_headers
+
+
+if 'pred_df' not in st.session_state:
+    st.session_state.pred_df = None
+
 
 st.markdown(custom_headers, unsafe_allow_html=True)
 
 
-st.markdown("<h1>Forecasting</h1>", unsafe_allow_html=True)
+st.markdown("<h1>Predict for historical data</h1>", unsafe_allow_html=True)
 # from prediction import predict
 # st.set_page_config(
 #     page_title="Form",
@@ -21,12 +25,10 @@ st.markdown("<h1>Forecasting</h1>", unsafe_allow_html=True)
 #
 
 
-
 selected_option=st.radio('Pick one:', ['Wind Turbine','Solar Panel'])
 unit_list=[]
-new_unit_list=[]
-weather_df=None
-
+start_date=None
+stop_date=None
 
 def checkbox_container(data):
     cols = st.columns(5)
@@ -45,8 +47,9 @@ def get_selected_checkboxes():
     return [i.replace('dynamic_checkbox_', '') for i in st.session_state.keys() if
             i.startswith('dynamic_checkbox_') and st.session_state[i]]
 
-if selected_option=="Wind Turbine":
 
+
+if selected_option=="Wind Turbine":
 
     st.text("")
     st.subheader('Select a Unit')
@@ -54,25 +57,33 @@ if selected_option=="Wind Turbine":
     import streamlit as st
 
     if 'dummy_data' not in st.session_state.keys():
-        dummy_data = ['Unit1', 'Unit2', 'Unit3', 'Unit4', 'Unit5','Unit6','Unit7']
+        dummy_data = ['Unit1', 'Unit2', 'Unit3', 'Unit4', 'Unit5', 'Unit6', 'Unit7']
         st.session_state['dummy_data'] = dummy_data
     else:
         dummy_data = st.session_state['dummy_data']
 
     checkbox_container(dummy_data)
     st.write('You selected:')
-    unit_list=get_selected_checkboxes()
+    unit_list = get_selected_checkboxes()
 
+    st.subheader('Select Start/Stop Dates')
 
-    st.subheader('Select number of days for forecast')
+    start_date = st.date_input("Start Date", datetime.date(2023, 9, 9))
+    stop_date = st.date_input("Stop Date", datetime.date(2023, 9, 9))
 
-    number_days = st.number_input('Number of days',max_value=7,step=1)
+    st.button("Predict",on_click=lambda: predict_turbine(unit_list, start_date, stop_date))
 
-    coordinates = "47.034746,28.421021"
+    # if st.button("Predict", key="predict_button_2"):
+    #     predict_turbine(unit_list, start_date, stop_date)
 
-
-    #forecast_bt=st.button("Forecast",on_click=get_forecast_weather(number_days,coordinates))
-    forecast_bt = st.button("Forecast", on_click=forecast_turbine(get_forecast_weather_wind(number_days,unit_list)[0],get_forecast_weather_wind(number_days,unit_list)[1]))
+    if st.session_state.pred_df is not None:
+        csv = st.session_state.pred_df.to_csv(index=False)
+        st.download_button(
+            label="Download Forecast Data",
+            data=csv,
+            file_name="forecast_data.csv",
+            mime="text/csv",
+        )
 
 elif selected_option=="Solar Panel":
 
@@ -84,19 +95,13 @@ elif selected_option=="Solar Panel":
 
     checkbox_container(sun_data)
     st.write('You selected:')
-    unit_list = get_selected_checkboxes()
+    #unit_list = get_selected_checkboxes()
+    st.subheader('Select Start/Stop Dates')
 
-    st.subheader('Select number of days for forecast')
+    start_date = st.date_input("Start Date", datetime.date(2023, 9, 9))
+    stop_date = st.date_input("Stop Date", datetime.date(2023, 9, 9))
 
-    number_days = st.number_input('Number of days', max_value=7, step=1)
-
-    forecast_bt = st.button("Forecast",on_click=forecast_panel(get_forecast_weather_sun(number_days,unit_list)[0],get_forecast_weather_sun(number_days,unit_list)[1]))
-
-
-
-
-
-
+    st.button("Predict", on_click=predict_sun(unit_list, start_date, stop_date))
 
 
 

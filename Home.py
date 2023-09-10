@@ -1,6 +1,6 @@
-import pandas as pd
 import pymongo
 import streamlit as st
+
 
 from utils_dir import styles
 from utils_dir.texts import text
@@ -33,6 +33,10 @@ def init_database_connection():
 # energy_tech_df = energy_tech_df.drop_duplicates()
 #
 # add_turbine_data_to_db(energy_tech_df.to_dict(orient="records"))
+
+
+
+    
 
 st.markdown(styles.custom_headers, unsafe_allow_html=True)
 
